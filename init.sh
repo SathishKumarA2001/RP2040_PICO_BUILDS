@@ -9,6 +9,14 @@ create_target_dir() {
     fi
 }
 
+create_build_dir() {
+    BUILD_DIR="$TARGET_DIR/build"
+    if [ -d "$TARGET_DIR" ] && [ ! -d "$BUILD_DIR" ]; then
+        echo "Creating build directory: $BUILD_DIR"
+        mkdir "$BUILD_DIR"
+    fi
+}
+
 create_main_file() {
     MAIN_FILE="$TARGET_DIR/main.c"
 
@@ -41,7 +49,7 @@ create_cmakelists_txt() {
         echo "
         cmake_minimum_required(VERSION 3.13)
 
-        set(PICO_SDK_PATH "/pico-sdk") # Set this config for your pico-sdk path
+        set(PICO_SDK_PATH "./../../pico-sdk") # Set this config for your pico-sdk path
 
         include(pico_sdk_import.cmake)
 
@@ -59,7 +67,7 @@ create_cmakelists_txt() {
         pico_enable_stdio_uart(main 0)
         pico_add_extra_outputs(main)
 
-        target_link_libraries(main pico_stdlib)" > $CMAKELISTS_FILE
+        target_link_libraries(main pico_stdlib hardware_adc pico_multicore)" > $CMAKELISTS_FILE
 
     fi
 }
@@ -111,6 +119,7 @@ if [ -d "$TARGET_DIR" ]; then
 fi
 
 create_target_dir
+create_build_dir
 create_main_file
 create_cmake_import_file
 create_cmakelists_txt
